@@ -8,23 +8,27 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import { connect } from 'react-redux';
 import DeleteIcon from "@material-ui/icons/Delete";
-import { deleteTodoAction } from '../actions/todo';
+import { deleteTodoAction, handleTodoStatusAction } from '../actions/todo';
+
 const TodoList = ({ todoList, dispatch }) => {
+    const handleTodo = (id) => {
+        dispatch(handleTodoStatusAction(id));
+    }
     return <List>
-        {todoList.map(({ todo, id }) => {
+        {todoList.map(({ name, id, completed }) => {
             return (
-                <ListItem key={id} role={undefined} dense button  >
+                <ListItem key={id} dense button onClick={() => handleTodo(id)} >
                     <ListItemIcon>
                         <Checkbox
                             edge="start"
-                            // checked= 
+                            checked={completed}
                             tabIndex={-1}
                             disableRipple
                         />
                     </ListItemIcon>
-                    <ListItemText primary={todo + ' ' + id} />
+                    <ListItemText primary={id + ' ' + name} />
                     <ListItemSecondaryAction>
-                        <IconButton edge="end" aria-label="comments" onClick={() => dispatch(deleteTodoAction(id))}>
+                        <IconButton edge="end" color="secondary" onClick={() => dispatch(deleteTodoAction(id))}>
                             <DeleteIcon />
                         </IconButton>
                     </ListItemSecondaryAction>
@@ -34,8 +38,18 @@ const TodoList = ({ todoList, dispatch }) => {
     </List>;
 }
 
+function getFilteredList(state) {
+    if (state.filter === "COMPLETED") {
+        return state.todoList.filter((todo) => todo.completed === true);
+    } else if (state.filter === "INCOMPLETE") {
+        return state.todoList.filter((todo) => todo.completed === false);
+    } else {
+        return state.todoList;
+    }
+}
+
 const mapStateToProps = (state) => ({
-    todoList: state.todoList
+    todoList: getFilteredList(state),
 })
 
 export default connect(mapStateToProps, null)(TodoList);

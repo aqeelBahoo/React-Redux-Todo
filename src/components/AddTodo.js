@@ -19,7 +19,8 @@ const AddTodo = ({ dispatch }) => {
         if (!todoField.trim()) {
             return;
         }
-        dispatch(addTodoAction(todoField));
+        const todo = { name: todoField, completed: false };
+        dispatch(addTodoAction(todo));
         setTodoField("");
     }
     const classes = useStyles();
